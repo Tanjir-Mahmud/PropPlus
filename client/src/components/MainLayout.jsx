@@ -208,6 +208,15 @@ const MainLayout = () => {
                         </>
                     )}
                 </div>
+
+                {/* DEBUG BAR - REMOVE LATER */}
+                <div className="bg-slate-900 border-t border-slate-800 p-2 text-[10px] text-slate-500 flex justify-between px-4 font-mono">
+                    <span>UID: {currentUser?.uid || 'Not Logged In'}</span>
+                    <span>Leads: {leads.length} | Inventory: {inventory.length}</span>
+                    <span>Loading: {isLoading ? 'Yes' : 'No'}</span>
+                    <span>Path: users/{currentUser?.uid}/...</span>
+                </div>
+
             </main>
         </div>
     );
