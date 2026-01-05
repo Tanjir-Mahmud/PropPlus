@@ -12,9 +12,14 @@ const InventoryGallery = ({ inventory = [], leads = [], searchTerm = '', onCreat
 
     // Filter Inventory
     const filteredInventory = inventory.filter(item => {
-        const matchesSearch = item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            item.type?.toLowerCase().includes(searchTerm.toLowerCase());
+        const title = (item.title || '').toLowerCase();
+        const location = (item.location || '').toLowerCase();
+        const type = (item.type || '').toLowerCase();
+        const search = searchTerm.toLowerCase();
+
+        const matchesSearch = title.includes(search) ||
+            location.includes(search) ||
+            type.includes(search);
 
         const matchesType = filterType === 'All' || item.type === filterType;
         const matchesStatus = filterStatus === 'All' || item.status === filterStatus;

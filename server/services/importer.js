@@ -44,6 +44,10 @@ const mapRow = (row, mappingType) => {
     if (mappingType === 'leads') {
         if (!mappedData.status) mappedData.status = 'New';
         if (!mappedData.source) mappedData.source = 'Imported';
+    } else if (mappingType === 'inventory') {
+        if (!mappedData.status) mappedData.status = 'Available';
+        if (!mappedData.type) mappedData.type = 'Apartment';
+        if (!mappedData.title) mappedData.title = 'New Property';
     }
 
     return mappedData;
