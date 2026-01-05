@@ -84,7 +84,7 @@ const Settings = ({ onDataImported }) => {
 
         try {
             // 1. Upload to server for parsing (returns JSON)
-            const response = await axios.post('http://localhost:3000/api/import/parse', formData, {
+            const response = await axios.post('/api/import/parse', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
