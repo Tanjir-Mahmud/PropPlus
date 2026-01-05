@@ -11,69 +11,13 @@ const Settings = ({ onDataImported }) => {
     const [isImporting, setIsImporting] = useState(false);
     const [importStatus, setImportStatus] = useState(null);
 
-    const processAndSaveData = async (data) => {
-        if (!currentUser) {
-            console.error("Import Error: User not logged in");
-            return { count: 0, errors: ["Authentication missing"] };
-        }
+    // Client-side processing removed in favor of Server-side Admin Import to fix permissions
 
-        // Use standard users path to fix permission errors
-        const userPath = `users/${currentUser.uid}`;
-        let count = 0;
-        let errors = [];
-
-        console.log(`Starting import for ${data.length} items to ${userPath}`);
-
-        for (const item of data) {
-            let collectionName = 'leads';
-            let itemType = 'Lead';
-
-            // Logic to determine Lead vs Inventory
-            if (item.type) {
-                const lower = String(item.type).toLowerCase();
-                if (['apartment', 'land', 'commercial', 'house', 'villa', 'property'].some(t => lower.includes(t))) {
-                    collectionName = 'inventory';
-                    itemType = item.type;
-                }
-            }
-
-            // Normalization
-            const payload = {
-                ...item,
-                type: itemType,
-                createdAt: serverTimestamp(),
-                importedAt: serverTimestamp(),
-                status: item.status || (collectionName === 'leads' ? 'New' : 'Available'),
-                source: item.source || 'Import'
-            };
-
-            // Fix specific fields and ensure numbers are valid
-            if (collectionName === 'leads') {
-                payload.name = item.name || item.title || 'Unknown Lead';
-                const b = parseFloat(String(item.budget || item.price || 0).replace(/[^0-9.]/g, ''));
-                payload.budget = isNaN(b) ? 0 : b;
-            } else {
-                payload.title = item.title || item.name || 'Unnamed Property';
-                const p = parseFloat(String(item.price || item.budget || 0).replace(/[^0-9.]/g, ''));
-                payload.price = isNaN(p) ? 0 : p;
-            }
-
-            try {
-                await addDoc(collection(db, userPath, collectionName), payload);
-                count++;
-            } catch (err) {
-                console.error(`Failed to save to ${collectionName}:`, item, err);
-                // Keep the error message clean
-                const errMsg = err.code === 'permission-denied' ? 'Missing or insufficient permissions' : err.message;
-                errors.push(errMsg);
-            }
-        }
-        return { count, errors };
-    };
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+        if (!currentUser) return setImportStatus({ type: 'error', message: 'User not authenticated' });
 
         setIsImporting(true);
         setImportStatus(null);
@@ -81,44 +25,20 @@ const Settings = ({ onDataImported }) => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('type', 'leads');
+        formData.append('userId', currentUser.uid);
 
         try {
-            // 1. Upload to server for parsing (returns JSON)
-            const response = await axios.post('/api/import/parse', formData, {
+            const response = await axios.post('/api/import', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            const { data } = response.data;
-
-            if (!data || data.length === 0) {
-                setImportStatus({ type: 'error', message: 'Parser returned 0 items. Please check if the file is empty or valid.' });
-                setIsImporting(false);
-                return;
-            }
-
-            // 2. Save...
-            const { count, errors } = await processAndSaveData(data);
-
-            if (count > 0) {
-                const errorSuffix = errors.length > 0 ? ` (${errors.length} failed)` : '';
-                setImportStatus({ type: 'success', message: `Successfully imported ${count} items${errorSuffix}` });
-                if (onDataImported) onDataImported();
-            } else {
-                const rootCause = errors[0] ? errors[0] : 'Unknown Save Error';
-                setImportStatus({ type: 'error', message: `All items failed to save. Error: ${rootCause}` });
-            }
-
+            const { count } = response.data;
+            setImportStatus({ type: 'success', message: `Successfully imported ${count} items.` });
+            if (onDataImported) onDataImported();
         } catch (error) {
-            let msg = 'Import failed.';
-            if (error.response) {
-                msg += ` Server Error: ${error.response.status}`;
-            } else if (error.request) {
-                msg += ' Server not reachable. Is it running?';
-            } else {
-                msg += ` ${error.message}`;
-            }
+            console.error("Import Error:", error);
+            const msg = error.response?.data?.error || error.message || 'Import failed.';
             setImportStatus({ type: 'error', message: msg });
-            console.error(error);
         } finally {
             setIsImporting(false);
             e.target.value = null;

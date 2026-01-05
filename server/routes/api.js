@@ -29,10 +29,11 @@ router.post('/import/parse', upload.single('file'), async (req, res) => {
 router.post('/import', upload.single('file'), async (req, res) => {
     try {
         const type = req.body.type || 'leads';
+        const userId = req.body.userId; // Extract userId
         if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
         const parsedData = parseImportFile(req.file.buffer, type);
-        const count = await processImportData(parsedData, type);
+        const count = await processImportData(parsedData, type, userId);
 
         res.json({ message: `Successfully imported ${count} items`, count });
     } catch (error) {
@@ -43,7 +44,7 @@ router.post('/import', upload.single('file'), async (req, res) => {
 
 router.post('/import/url', async (req, res) => {
     try {
-        const { url, type = 'leads' } = req.body;
+        const { url, type = 'leads', userId } = req.body;
         if (!url) return res.status(400).json({ error: 'URL is required' });
 
         const fetchResponse = await fetch(url);
@@ -53,7 +54,7 @@ router.post('/import/url', async (req, res) => {
         const buffer = Buffer.from(arrayBuffer);
 
         const parsedData = parseImportFile(buffer, type);
-        const count = await processImportData(parsedData, type);
+        const count = await processImportData(parsedData, type, userId);
 
         res.json({ message: `Successfully synced ${count} items from Sheet`, count });
     } catch (error) {
@@ -62,7 +63,7 @@ router.post('/import/url', async (req, res) => {
     }
 });
 
-async function processImportData(data, defaultType = 'leads') {
+async function processImportData(data, defaultType = 'leads', userId = null) {
     let createdCount = 0;
     const VALID_STAGES = ['New', 'Contacted', 'Site Visit', 'Negotiation', 'Closed', 'Lost'];
 
@@ -102,7 +103,7 @@ async function processImportData(data, defaultType = 'leads') {
                     source: finalSource,
                     type: 'Lead'
                 };
-                await leadRepository.create(leadData);
+                await leadRepository.create(leadData, userId);
                 createdCount++;
             }
         } else {
@@ -116,7 +117,7 @@ async function processImportData(data, defaultType = 'leads') {
                     type: item.type || 'Property',
                     status: item.status || 'Available'
                 };
-                await inventoryRepository.create(invData);
+                await inventoryRepository.create(invData, userId);
                 createdCount++;
             }
         }
