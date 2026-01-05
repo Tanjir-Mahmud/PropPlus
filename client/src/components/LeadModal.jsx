@@ -77,10 +77,9 @@ const LeadModal = ({ isOpen, onClose, onSubmit, inventory = [] }) => {
                             onChange={(e) => setFormData({ ...formData, project: e.target.value })}
                         >
                             <option value="">Select Project...</option>
-                            <option value="Skyline Tower">Skyline Tower</option>
-                            <option value="Ocean View">Ocean View</option>
-                            <option value="Central Mall">Central Mall</option>
-                            <option value="Sunset Villas">Sunset Villas</option>
+                            {[...new Set(inventory.map(item => item.title))].sort().map(title => (
+                                <option key={title} value={title}>{title}</option>
+                            ))}
                             <option value="Other">Other</option>
                         </select>
                     </div>
