@@ -10,6 +10,7 @@ const Settings = ({ onDataImported }) => {
     const { currentUser } = useAuth();
     const [isImporting, setIsImporting] = useState(false);
     const [importStatus, setImportStatus] = useState(null);
+    const [importType, setImportType] = useState('leads');
 
     // Client-side processing removed in favor of Server-side Admin Import to fix permissions
 
@@ -24,7 +25,7 @@ const Settings = ({ onDataImported }) => {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('type', 'leads');
+        formData.append('type', importType);
         formData.append('userId', currentUser.uid);
 
         try {
@@ -97,6 +98,24 @@ const Settings = ({ onDataImported }) => {
             </Card>
 
             <Card title="File Import (Legacy)" subtitle="Upload static Excel or CSV files">
+                <div className="mb-4">
+                    <label className="block text-xs font-medium text-slate-400 mb-2">What are you importing?</label>
+                    <div className="flex space-x-4">
+                        <button
+                            onClick={() => setImportType('leads')}
+                            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${importType === 'leads' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                        >
+                            Leads
+                        </button>
+                        <button
+                            onClick={() => setImportType('inventory')}
+                            className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${importType === 'inventory' ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-400 hover:text-white'}`}
+                        >
+                            Property Inventory
+                        </button>
+                    </div>
+                </div>
+
                 <div className="mt-4 p-8 border-2 border-dashed border-slate-800 rounded-xl bg-slate-900/30 text-center relative group hover:border-blue-500 transition-colors">
                     <input
                         type="file"
