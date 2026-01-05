@@ -1,13 +1,20 @@
 import React from 'react';
 import { Plus, Filter, MoreHorizontal, DollarSign } from 'lucide-react';
 
-const LeadsPipeline = ({ leads, onCreateLead, onUpdateStatus }) => {
+const LeadsPipeline = ({ leads, searchTerm = '', onCreateLead, onUpdateStatus }) => {
 
     const handleStatusChange = async (id, newStatus) => {
         if (onUpdateStatus) {
             onUpdateStatus(id, newStatus);
         }
     };
+
+    const filteredLeads = leads.filter(lead =>
+        lead.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.source?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.project?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="h-full flex flex-col space-y-6">
@@ -32,14 +39,14 @@ const LeadsPipeline = ({ leads, onCreateLead, onUpdateStatus }) => {
                             <div className="flex items-center space-x-2">
                                 <h4 className="text-xs font-bold text-slate-100 uppercase tracking-wider">{stage}</h4>
                                 <span className="bg-slate-800 text-slate-400 text-[10px] px-2 py-0.5 rounded-full">
-                                    {leads.filter(l => l.status === stage).length}
+                                    {filteredLeads.filter(l => l.status === stage).length}
                                 </span>
                             </div>
                             <MoreHorizontal size={14} className="text-slate-600 cursor-pointer hover:text-slate-400" />
                         </div>
 
                         <div className="flex-1 bg-slate-900/30 rounded-xl border border-slate-800 p-2 space-y-3 overflow-y-auto custom-scrollbar">
-                            {leads.filter(l => l.status === stage).map(lead => (
+                            {filteredLeads.filter(l => l.status === stage).map(lead => (
                                 <div key={lead.id} className="bg-slate-800/80 p-4 rounded-lg border border-slate-700 hover:border-blue-500/50 transition-all shadow-sm group">
                                     <div className="flex justify-between items-start mb-3">
                                         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${lead.source === 'Google Sheets' ? 'bg-green-500/10 text-green-400' : 'bg-blue-500/10 text-blue-400'}`}>

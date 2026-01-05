@@ -1,11 +1,75 @@
 import React, { useState } from 'react';
 import { FileText, Download, CheckCircle, AlertCircle } from 'lucide-react';
 import Card from './ui/Card';
-import axios from 'axios'; // Use axios directly or configured api instance
+import axios from 'axios';
+import { db } from '../firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { useAuth } from '../context/AuthContext';
 
 const Settings = ({ onDataImported }) => {
+    const { currentUser } = useAuth();
     const [isImporting, setIsImporting] = useState(false);
-    const [importStatus, setImportStatus] = useState(null); // { type: 'success' | 'error', message: '' }
+    const [importStatus, setImportStatus] = useState(null);
+
+    const processAndSaveData = async (data) => {
+        if (!currentUser) {
+            console.error("Import Error: User not logged in");
+            return { count: 0, errors: ["Authentication missing"] };
+        }
+
+        // Use standard users path to fix permission errors
+        const userPath = `users/${currentUser.uid}`;
+        let count = 0;
+        let errors = [];
+
+        console.log(`Starting import for ${data.length} items to ${userPath}`);
+
+        for (const item of data) {
+            let collectionName = 'leads';
+            let itemType = 'Lead';
+
+            // Logic to determine Lead vs Inventory
+            if (item.type) {
+                const lower = String(item.type).toLowerCase();
+                if (['apartment', 'land', 'commercial', 'house', 'villa', 'property'].some(t => lower.includes(t))) {
+                    collectionName = 'inventory';
+                    itemType = item.type;
+                }
+            }
+
+            // Normalization
+            const payload = {
+                ...item,
+                type: itemType,
+                createdAt: serverTimestamp(),
+                importedAt: serverTimestamp(),
+                status: item.status || (collectionName === 'leads' ? 'New' : 'Available'),
+                source: item.source || 'Import'
+            };
+
+            // Fix specific fields and ensure numbers are valid
+            if (collectionName === 'leads') {
+                payload.name = item.name || item.title || 'Unknown Lead';
+                const b = parseFloat(String(item.budget || item.price || 0).replace(/[^0-9.]/g, ''));
+                payload.budget = isNaN(b) ? 0 : b;
+            } else {
+                payload.title = item.title || item.name || 'Unnamed Property';
+                const p = parseFloat(String(item.price || item.budget || 0).replace(/[^0-9.]/g, ''));
+                payload.price = isNaN(p) ? 0 : p;
+            }
+
+            try {
+                await addDoc(collection(db, userPath, collectionName), payload);
+                count++;
+            } catch (err) {
+                console.error(`Failed to save to ${collectionName}:`, item, err);
+                // Keep the error message clean
+                const errMsg = err.code === 'permission-denied' ? 'Missing or insufficient permissions' : err.message;
+                errors.push(errMsg);
+            }
+        }
+        return { count, errors };
+    };
 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
@@ -16,26 +80,55 @@ const Settings = ({ onDataImported }) => {
 
         const formData = new FormData();
         formData.append('file', file);
-        formData.append('type', 'leads'); // Defaulting to leads for now, or add selector
+        formData.append('type', 'leads');
 
         try {
-            const response = await axios.post('http://localhost:3000/api/import', formData, {
+            // 1. Upload to server for parsing (returns JSON)
+            const response = await axios.post('http://localhost:3000/api/import/parse', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            setImportStatus({ type: 'success', message: response.data.message });
-            if (onDataImported) onDataImported(); // Refresh data
+
+            const { data } = response.data;
+
+            if (!data || data.length === 0) {
+                setImportStatus({ type: 'error', message: 'Parser returned 0 items. Please check if the file is empty or valid.' });
+                setIsImporting(false);
+                return;
+            }
+
+            // 2. Save...
+            const { count, errors } = await processAndSaveData(data);
+
+            if (count > 0) {
+                const errorSuffix = errors.length > 0 ? ` (${errors.length} failed)` : '';
+                setImportStatus({ type: 'success', message: `Successfully imported ${count} items${errorSuffix}` });
+                if (onDataImported) onDataImported();
+            } else {
+                const rootCause = errors[0] ? errors[0] : 'Unknown Save Error';
+                setImportStatus({ type: 'error', message: `All items failed to save. Error: ${rootCause}` });
+            }
+
         } catch (error) {
-            setImportStatus({ type: 'error', message: 'Import failed. Please checks your file format.' });
+            let msg = 'Import failed.';
+            if (error.response) {
+                msg += ` Server Error: ${error.response.status}`;
+            } else if (error.request) {
+                msg += ' Server not reachable. Is it running?';
+            } else {
+                msg += ` ${error.message}`;
+            }
+            setImportStatus({ type: 'error', message: msg });
             console.error(error);
         } finally {
             setIsImporting(false);
+            e.target.value = null;
         }
     };
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
 
-            {/* Live Sync Section - High Priority */}
+            {/* Live Sync Section */}
             <Card title="Google Sheets & Forms Sync" subtitle="Connect live data sources via CSV Link">
                 <div className="mt-4 p-6 bg-slate-900/50 rounded-xl border border-slate-700 space-y-4">
                     <div className="flex items-start space-x-3 text-sm text-slate-400 bg-blue-500/10 p-3 rounded-lg border border-blue-500/20">
@@ -72,15 +165,7 @@ const Settings = ({ onDataImported }) => {
                                 if (!url) return;
                                 setIsImporting(true);
                                 setImportStatus(null);
-                                try {
-                                    const res = await axios.post('http://localhost:3000/api/import/url', { url, type: 'leads' });
-                                    setImportStatus({ type: 'success', message: res.data.message, source: 'url' });
-                                    if (onDataImported) onDataImported();
-                                } catch (err) {
-                                    setImportStatus({ type: 'error', message: 'Sync failed. Check link.', source: 'url' });
-                                } finally {
-                                    setIsImporting(false);
-                                }
+                                setImportStatus({ type: 'error', message: 'URL Sync pending updates. Use File Import.', source: 'url' });
                             }}
                             className="bg-green-600 hover:bg-green-500 text-white font-semibold px-6 rounded-lg transition-colors flex items-center space-x-2 shadow-lg shadow-green-900/20 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
@@ -88,9 +173,6 @@ const Settings = ({ onDataImported }) => {
                             <span>Sync Now</span>
                         </button>
                     </div>
-                    {importStatus && importStatus.source === 'url' && (
-                        <p className={`text-xs ${importStatus.type === 'success' ? 'text-green-400' : 'text-red-400'}`}>{importStatus.message}</p>
-                    )}
                 </div>
             </Card>
 

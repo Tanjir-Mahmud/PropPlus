@@ -1,4 +1,6 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     Users,
@@ -12,8 +14,8 @@ const SidebarItem = ({ icon: Icon, label, id, activeTab, setActiveTab }) => (
     <button
         onClick={() => setActiveTab(id)}
         className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${activeTab === id
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-                : 'text-slate-400 hover:bg-slate-800 hover:text-white'
+            ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
+            : 'text-slate-400 hover:bg-slate-800 hover:text-white'
             }`}
     >
         <Icon size={20} />
@@ -22,6 +24,22 @@ const SidebarItem = ({ icon: Icon, label, id, activeTab, setActiveTab }) => (
 );
 
 const Sidebar = ({ activeTab, setActiveTab }) => {
+    const { currentUser, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/login');
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
+    };
+
+    // Derived user initials/name
+    const userDisplay = currentUser?.displayName || currentUser?.email?.split('@')[0] || 'User';
+    const userInitials = userDisplay.slice(0, 2).toUpperCase();
+
     return (
         <aside className="w-64 border-r border-slate-800 flex flex-col p-4 space-y-8 bg-[#020617]">
             <div className="flex items-center space-x-3 px-2">
@@ -43,13 +61,20 @@ const Sidebar = ({ activeTab, setActiveTab }) => {
 
             <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
                 <div className="flex items-center space-x-3 mb-3">
-                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white">JD</div>
+                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-xs font-bold text-white">
+                        {userInitials}
+                    </div>
                     <div>
-                        <p className="text-xs font-semibold text-white">Admin User</p>
-                        <p className="text-[10px] text-slate-500">Sales Controller</p>
+                        <p className="text-xs font-semibold text-white truncate max-w-[120px]">{userDisplay}</p>
+                        <p className="text-[10px] text-slate-500">Sales Agent</p>
                     </div>
                 </div>
-                <button className="w-full text-[10px] py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 transition-colors">Sign Out</button>
+                <button
+                    onClick={handleLogout}
+                    className="w-full text-[10px] py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-slate-300 transition-colors"
+                >
+                    Sign Out
+                </button>
             </div>
         </aside>
     );

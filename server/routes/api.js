@@ -13,6 +13,19 @@ const GLOBAL_COMMISSION_RATE = 2.5;
 
 // --- Import Route ---
 // --- Import Route ---
+router.post('/import/parse', upload.single('file'), async (req, res) => {
+    try {
+        const type = req.body.type || 'leads';
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+        const parsedData = parseImportFile(req.file.buffer, type);
+        res.json({ data: parsedData, count: parsedData.length });
+    } catch (error) {
+        console.error("Parse Error:", error);
+        res.status(500).json({ error: 'Failed to parse file' });
+    }
+});
+
 router.post('/import', upload.single('file'), async (req, res) => {
     try {
         const type = req.body.type || 'leads';
@@ -154,6 +167,16 @@ router.post('/inventory', async (req, res) => {
     try {
         const item = await inventoryRepository.create(req.body);
         res.status(201).json(item);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.put('/inventory/:id', async (req, res) => {
+    try {
+        const updated = await inventoryRepository.update(req.params.id, req.body);
+        if (!updated) return res.status(404).json({ message: 'Item not found' });
+        res.json(updated);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }

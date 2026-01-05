@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { X, Save } from 'lucide-react';
 
-const LeadModal = ({ isOpen, onClose, onSubmit }) => {
+const LeadModal = ({ isOpen, onClose, onSubmit, inventory = [] }) => {
     const [formData, setFormData] = useState({
         name: '',
         phone: '',
         email: '',
         budget: '',
         project: '',
-        source: 'Manual'
+        source: 'Manual',
+        propertyId: ''
     });
 
     if (!isOpen) return null;
@@ -16,7 +17,7 @@ const LeadModal = ({ isOpen, onClose, onSubmit }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
         onSubmit(formData);
-        setFormData({ name: '', phone: '', email: '', budget: '', project: '', source: 'Manual' }); // Reset
+        setFormData({ name: '', phone: '', email: '', budget: '', project: '', source: 'Manual', propertyId: '' }); // Reset
         onClose();
     };
 
@@ -81,6 +82,25 @@ const LeadModal = ({ isOpen, onClose, onSubmit }) => {
                             <option value="Central Mall">Central Mall</option>
                             <option value="Sunset Villas">Sunset Villas</option>
                             <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-slate-400 mb-1">Link Property (Optional)</label>
+                        <select
+                            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none"
+                            value={formData.propertyId}
+                            onChange={(e) => setFormData({ ...formData, propertyId: e.target.value })}
+                        >
+                            <option value="">Select Available Property...</option>
+                            {inventory
+                                .filter(item => item.status === 'Available')
+                                .map(item => (
+                                    <option key={item.id} value={item.id}>
+                                        {item.title} (${(item.price / 1000).toFixed(0)}k)
+                                    </option>
+                                ))
+                            }
                         </select>
                     </div>
 
