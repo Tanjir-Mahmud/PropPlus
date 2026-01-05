@@ -1,0 +1,248 @@
+{
+  "leads": [
+    {
+      "id": "mjy3fvjy1xbqdgs5otw",
+      "name": "Skyline Tower A1",
+      "phone": "Manhattan, NY",
+      "budget": 850000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Skyline Tower A1",
+      "createdAt": "2026-01-03T09:21:44.062Z"
+    },
+    {
+      "id": "mjy3fvjzo5c7lnnakei",
+      "name": "Alice Johnson",
+      "phone": "+1-555-0101",
+      "budget": 900000,
+      "status": "FB Ads",
+      "source": "FB Ads",
+      "propertyId": "Alice Johnson",
+      "createdAt": "2026-01-03T09:21:44.063Z"
+    },
+    {
+      "id": "mjy3fvk080fij5cgsu4",
+      "name": "Ocean View Plot",
+      "phone": "Miami, FL",
+      "budget": 1200000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Ocean View Plot",
+      "createdAt": "2026-01-03T09:21:44.064Z"
+    },
+    {
+      "id": "mjy3fvk13p2lmesp5f2",
+      "name": "Bob Thompson",
+      "phone": "+1-555-0102",
+      "budget": 1100000,
+      "status": "Google",
+      "source": "Google",
+      "propertyId": "Bob Thompson",
+      "createdAt": "2026-01-03T09:21:44.065Z"
+    },
+    {
+      "id": "mjy3fvk2q269vllpdl",
+      "name": "Central Mall Shop",
+      "phone": "Austin, TX",
+      "budget": 450000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Central Mall Shop",
+      "createdAt": "2026-01-03T09:21:44.066Z"
+    },
+    {
+      "id": "mjy3fvk28u3kwc6t1su",
+      "name": "Charlie Davis",
+      "phone": "+1-555-0103",
+      "budget": 400000,
+      "status": "Referral",
+      "source": "Referral",
+      "propertyId": "Charlie Davis",
+      "createdAt": "2026-01-03T09:21:44.066Z"
+    },
+    {
+      "id": "mjy3fvk3tix3d7do1i",
+      "name": "Green Valley Villa",
+      "phone": "Seattle, WA",
+      "budget": 750000,
+      "status": "Booked",
+      "source": "Booked",
+      "propertyId": "Green Valley Villa",
+      "createdAt": "2026-01-03T09:21:44.067Z"
+    },
+    {
+      "id": "mjy3fvk4y7x5r866a09",
+      "name": "Diana Prince",
+      "phone": "+1-555-0104",
+      "budget": 800000,
+      "status": "Instagram",
+      "source": "Instagram",
+      "propertyId": "Diana Prince",
+      "createdAt": "2026-01-03T09:21:44.068Z"
+    },
+    {
+      "id": "mjy3fvk4yu0el92u9ve",
+      "name": "Industrial Hub B",
+      "phone": "Detroit, MI",
+      "budget": 2000000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Industrial Hub B",
+      "createdAt": "2026-01-03T09:21:44.068Z"
+    },
+    {
+      "id": "mjy3fvk5erl9xe1ap69",
+      "name": "Edward Norton",
+      "phone": "+1-555-0105",
+      "budget": 2500000,
+      "status": "Web Portal",
+      "source": "Web Portal",
+      "propertyId": "Edward Norton",
+      "createdAt": "2026-01-03T09:21:44.069Z"
+    },
+    {
+      "id": "mjy3gts61v9mfx1efc",
+      "name": "Skyline Tower A1",
+      "phone": "Manhattan, NY",
+      "budget": 850000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Skyline Tower A1",
+      "createdAt": "2026-01-03T09:22:28.422Z"
+    },
+    {
+      "id": "mjy3gts9y4b16258o5g",
+      "name": "Alice Johnson",
+      "phone": "+1-555-0101",
+      "budget": 900000,
+      "status": "FB Ads",
+      "source": "FB Ads",
+      "propertyId": "Alice Johnson",
+      "createdAt": "2026-01-03T09:22:28.425Z"
+    },
+    {
+      "id": "mjy3gtscqkbnjd5781j",
+      "name": "Ocean View Plot",
+      "phone": "Miami, FL",
+      "budget": 1200000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Ocean View Plot",
+      "createdAt": "2026-01-03T09:22:28.428Z"
+    },
+    {
+      "id": "mjy3gtsdnzk12ahijm",
+      "name": "Bob Thompson",
+      "phone": "+1-555-0102",
+      "budget": 1100000,
+      "status": "Google",
+      "source": "Google",
+      "propertyId": "Bob Thompson",
+      "createdAt": "2026-01-03T09:22:28.429Z"
+    },
+    {
+      "id": "mjy3gtsf0smqv88ngank",
+      "name": "Central Mall Shop",
+      "phone": "Austin, TX",
+      "budget": 450000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Central Mall Shop",
+      "createdAt": "2026-01-03T09:22:28.431Z"
+    },
+    {
+      "id": "mjy3gtshf31cxdn4vz",
+      "name": "Charlie Davis",
+      "phone": "+1-555-0103",
+      "budget": 400000,
+      "status": "Referral",
+      "source": "Referral",
+      "propertyId": "Charlie Davis",
+      "createdAt": "2026-01-03T09:22:28.433Z"
+    },
+    {
+      "id": "mjy3gtsi8tkg9ed84iu",
+      "name": "Green Valley Villa",
+      "phone": "Seattle, WA",
+      "budget": 750000,
+      "status": "Booked",
+      "source": "Booked",
+      "propertyId": "Green Valley Villa",
+      "createdAt": "2026-01-03T09:22:28.434Z"
+    },
+    {
+      "id": "mjy3gtsjeyfvwkesut",
+      "name": "Diana Prince",
+      "phone": "+1-555-0104",
+      "budget": 800000,
+      "status": "Instagram",
+      "source": "Instagram",
+      "propertyId": "Diana Prince",
+      "createdAt": "2026-01-03T09:22:28.435Z"
+    },
+    {
+      "id": "mjy3gtsku6aukv004w",
+      "name": "Industrial Hub B",
+      "phone": "Detroit, MI",
+      "budget": 2000000,
+      "status": "Available",
+      "source": "Available",
+      "propertyId": "Industrial Hub B",
+      "createdAt": "2026-01-03T09:22:28.436Z"
+    },
+    {
+      "id": "mjy3gtsltuipjcrnh1",
+      "name": "Edward Norton",
+      "phone": "+1-555-0105",
+      "budget": 2500000,
+      "status": "Web Portal",
+      "source": "Web Portal",
+      "propertyId": "Edward Norton",
+      "createdAt": "2026-01-03T09:22:28.437Z"
+    },
+    {
+      "id": "mjy3j2zm1z7pwmcdy7b",
+      "name": "Aug",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.666Z"
+    },
+    {
+      "id": "mjy3j2zoaiqrj6qfv9",
+      "name": "Sep",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.668Z"
+    },
+    {
+      "id": "mjy3j2zpno2focgy44i",
+      "name": "Oct",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.669Z"
+    },
+    {
+      "id": "mjy3j2zrxonnl2u8mca",
+      "name": "Nov",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.671Z"
+    },
+    {
+      "id": "mjy3j2zsu2ewpjl3v5",
+      "name": "Dec",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.672Z"
+    },
+    {
+      "id": "mjy3j2ztwf7sbq3u00f",
+      "name": "Jan",
+      "status": "New",
+      "source": "Imported",
+      "createdAt": "2026-01-03T09:24:13.673Z"
+    }
+  ],
+  "inventory": [],
+  "deals": []
+}
